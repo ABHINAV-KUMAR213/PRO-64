@@ -1,31 +1,32 @@
 import * as React from 'react';
 import {Text, View, StyleSheet, TextInput, TouchableOpacity, Image,Animated} from 'react-native';
 import { Header } from 'react-native-elements';
+import dictionary from '../database';
 
 export default class HomeScreen extends React.Component {
   constructor() {
     super();
     this.state = { word: '', definition: '', phonetics: '' };
   }
-  getWord = (word) => {
-    var url = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + word;
-    return fetch(url)
-      .then((data) => {
-        return data.json();
-      })
-      .then((response) => {
-        console.log(response);
-        //var responseObject = JSON.parse(response);
-        var word = response[0].word;
-        console.log(word);
-        var definition = response[0].meanings[0].definitions[0].definition;
-        console.log(definition);
-        this.setState({
-          word: word.trim(),
-          definition: definition.trim(),
-        });
-      });
-  };
+  getWord = (text) => {
+    text = text.toLowerCase();
+   try {
+     var word = dictionary[text]['word'];
+     var lexicalCategory = dictionary[text]['lexicalCategory'];
+     var definition = dictionary[text]['definition'];
+     this.setState({
+       word: word,
+       lexicalCategory: lexicalCategory,
+       definition: definition,
+     });
+   } catch (err) {
+     alert('Sorry, this word is not available in this dictionary for now. You can search for this word in this link - https://snack.expo.io/@charvikashyap/online-dictionary-app');
+     this.setState({
+       text: '',
+       isSearchPressed: false,
+     });
+   }
+ };
 
   render() {
     return (
